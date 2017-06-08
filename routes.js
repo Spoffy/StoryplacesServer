@@ -72,6 +72,9 @@ Router.route('/story')
     .get(Story.index)
     .post([AuthenticateUsingToken, Story.create]);
 
+Router.route('/story/create_default')
+    .get(Story.createDefault);
+
 Router.route('/story/:story_id')
     .get(Story.fetch);
 

@@ -47,6 +47,7 @@ let Media = require('../models/Media.js');
 let File = require('../utilities/File');
 
 exports.create = create;
+exports.createDefault = createDefault;
 exports.index = index;
 exports.adminindex = adminindex;
 exports.fetch = fetch;
@@ -71,6 +72,23 @@ function create(req, res, next) {
 
         res.json({message: 'Story created!'});
     });
+}
+
+function createDefault(req, res, next) {
+    let storyData = fse.readJsonSync("./stories/default_story.json");
+
+    var story = new CoreSchema.Story(storyData);
+
+    story.save(function (err) {
+        if (err) {
+            err.status = 400;
+            err.clientMessage = "Unable To save story";
+            return next(err);
+        }
+
+        res.json({message: 'Story created!'});
+    });
+
 }
 
 function index(req, res, next) {
