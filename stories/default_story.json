@@ -69,6 +69,11 @@
       "id": "queens_park"
     },
     {
+      "id": "other_has_started",
+      "type": "other",
+      "conditions": ["SeenIntro"]
+    },
+    {
       "bool": "true",
       "type": "location",
       "location": "7bd42b68968c73c151874702",
@@ -179,6 +184,7 @@
         "StoryCount"
       ],
       "conditions": [
+        "other_has_started",
         "NotSeenPremonitions",
         "SeenIntro",
         "queens_park_admiralty"

@@ -231,6 +231,8 @@ function allReadingsForUser(req, res, next) {
         }
 
         let toSend = readings.map(reading => helpers.sanitizeOutboundObject(reading));
+        //TODO
+        //Possibly needs other player variable loading.
 
         res.json(toSend);
     });

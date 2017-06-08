@@ -223,6 +223,15 @@ var CheckCondition = new Schema({
     variable: {type: String, ref: 'Variable'}
 });
 
+// Other Condition ---------------------------------------------------------
+
+var OtherCondition = new Schema({
+    id: {type: String, required: true},
+    name: {type: String, required: true},
+    type: {type: String, default: "other"},
+    conditions: [{type: String, ref: 'Condition'}],
+});
+
 
 // Exports --------------------------------------------------------------------
 
