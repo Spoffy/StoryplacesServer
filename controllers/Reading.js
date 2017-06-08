@@ -53,18 +53,35 @@ function create(req, res, next) {
     let requestBody = helpers.sanitizeAndValidateInboundIds(undefined, req.body);
 
     var reading = new CoreSchema.Reading(requestBody);
-
-    reading.save(function (err) {
-        if (err) {
+    CoreSchema.Reading.findOne({ "partner": null }, function(err, partnerReading) {
+      if (partnerReading) {
+        reading.partner = partnerReading._id;
+        partnerReading.partner = reading._id;
+        partnerReading.save(function(err) {
+          if (err) {
             err.status = 400;
-            err.clientMessage = "Unable To save reading";
+            err.clientMessage = "Unable to save reading - Partner could not be assigned";
+            console.log("Unable to assign current user as partner of partner");
             return next(err);
-        }
+          }
+        });
+      }
 
-        let toSend = helpers.sanitizeOutboundObject(reading);
-        toSend.variables = toSend.variables.map(variable => helpers.sanitizeOutboundJson(variable));
+      reading.save(function (err) {
+          if (err) {
+              err.status = 400;
+              err.clientMessage = "Unable To save reading";
+              return next(err);
+          }
 
-        res.json(toSend);
+          let toSend = helpers.sanitizeOutboundObject(reading);
+          toSend.variables = toSend.variables.map(variable => helpers.sanitizeOutboundJson(variable));
+
+          loadOtherPlayersVariables(reading, function(partnerVars) {
+            toSend.otherPlayersVariables = partnerVars.map(variable => helpers.sanitizeOutboundJson(variable));
+            res.json(toSend);
+          });
+      });
     });
 }
 
@@ -87,8 +104,9 @@ function fetch(req, res, next) {
         return next(error);
     }
 
-    CoreSchema.Reading.findById(readingId, function (err, reading) {
+    CoreSchema.Reading.findById(readingId).exec(function (err, reading) {
         if (err) {
+            console.log("Couldn't load reading.");
             return next(err);
         }
 
@@ -99,11 +117,29 @@ function fetch(req, res, next) {
             return next(error);
         }
 
+        console.log(reading);
+
         let toSend = helpers.sanitizeOutboundObject(reading);
         toSend.variables = toSend.variables.map(variable => helpers.sanitizeOutboundJson(variable));
+        loadOtherPlayersVariables(reading, function(partnerVars) {
+          toSend.otherPlayersVariables = partnerVars.map(variable => helpers.sanitizeOutboundJson(variable));
+          res.json(toSend);
+        });
 
-        res.json(toSend);
     });
+}
+
+function loadOtherPlayersVariables(reading, callback) {
+  if (reading.partner == null) { return callback([]); }
+  CoreSchema.Reading.findById(reading.partner, function(err, partnerReading) {
+    if(err || partnerReading == null) {
+      console.error("Unable to load partner reading for " + reading._id);
+      return callback([]);
+    }
+    console.log("Partner Reading");
+    console.log(partnerReading);
+    return callback(partnerReading.variables);
+  });
 }
 
 function update(req, res, next) {

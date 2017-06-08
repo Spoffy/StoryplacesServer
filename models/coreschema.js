@@ -144,9 +144,11 @@ var Reading = new Schema({
     name: String,
     storyId: String,
     userId: String,
+    userStoryRole: Number,
     variables: [Variable],
     state: String,
-    timestamp: Number
+    timestamp: Number,
+    partner: {type: String, ref: 'Reading'}
 });
 
 Reading.virtual('id').get(function () {
