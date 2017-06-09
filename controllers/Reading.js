@@ -57,6 +57,10 @@ function create(req, res, next) {
       if (partnerReading) {
         reading.partner = partnerReading._id;
         partnerReading.partner = reading._id;
+
+        reading.variables.push({id: "playerID", key: "playerID", value: "Alpha"});
+        partnerReading.variables.push({id: "playerID", key: "playerID", value: "Bravo"});
+
         partnerReading.save(function(err) {
           if (err) {
             err.status = 400;

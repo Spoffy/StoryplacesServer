@@ -73,6 +73,7 @@
       "type": "other",
       "conditions": ["SeenIntro"]
     },
+
     {
       "bool": "true",
       "type": "location",
@@ -99,6 +100,24 @@
       "operand": "==",
       "type": "comparison",
       "id": "SeenIntro"
+    },
+    {
+      "bType": "String",
+      "b": "Bravo",
+      "aType": "Variable",
+      "a": "playerID",
+      "operand": "==",
+      "type": "comparison",
+      "id": "isBravo"
+    },
+    {
+      "bType": "String",
+      "b": "Alpha",
+      "aType": "Variable",
+      "a": "playerID",
+      "operand": "==",
+      "type": "comparison",
+      "id": "isAlpha"
     },
     {
       "bType": "String",
@@ -165,7 +184,8 @@
       "conditions": [
         "NotSeenHaunting",
         "SeenIntro",
-        "queens_park_southwestern"
+        "queens_park_southwestern",
+        "isBravo"
       ],
       "hint": {
         "direction": "Walk to the eastern corner of the park",
@@ -208,7 +228,8 @@
       "conditions": [
         "NotSeenDissenter",
         "SeenIntro",
-        "queens_park_godshouse"
+        "queens_park_godshouse",
+        "isAlpha"
       ],
       "hint": {
         "direction": "Walk to the western corner of the park",
