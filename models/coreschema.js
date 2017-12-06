@@ -61,7 +61,8 @@ User.set('toJSON', {
 
 var Page = new Schema({
     id: {type: String, required: true},
-    content: {type: String, ref: 'Content'},
+    //References Story.content
+    contentRef: {type: String, required: true},
     name: {type: String, required: true},
     pageTransition: {type: String, required: true},
     conditions: [{type: String, ref: 'Schema.Types.Mixed'}],
@@ -74,6 +75,10 @@ var Page = new Schema({
         required: true
     }
 });
+
+//This allows us to insert the content in a later processing step.
+//Without this, Mongoose won't let us JSONify the inserted content.
+Page.virtual("content");
 
 // Location -------------------------------------------------------------------
 
@@ -97,19 +102,13 @@ var Function = new Schema({
     conditions: [{type: String, ref: 'Condition'}],
 });
 
-// Content --------------------------------------------------------------------
-
-var Content = new Schema({
-    name: String,
-    body: String
-});
-
 // Story ----------------------------------------------------------------------
 
 var Story = new Schema({
     name: {type: String, required: true},
     pages: [Page],
-    content: [Content],
+    //A mapping of strings => strings
+    content: {},
     locations: [Location],
     conditions: [Schema.Types.Mixed],
     functions: [Function],

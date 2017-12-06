@@ -79,7 +79,7 @@ function index(req, res, next) {
             return next(err);
         }
 
-        let toSend = stories.map(story => sanitizeOutboundStory(story));
+        let toSend = stories.map(story => processOutboundStory(story));
 
         res.json(toSend);
     });
@@ -91,7 +91,7 @@ function adminindex(req, res, next) {
             return next(err);
         }
 
-        let toSend = stories.map(story => sanitizeOutboundStory(story));
+        let toSend = stories.map(story => processOutboundStory(story));
 
         res.json(toSend);
     });
@@ -119,7 +119,7 @@ function approve(req, res, next) {
             return next(error);
         }
 
-        let toSend = sanitizeOutboundStory(story);
+        let toSend = processOutboundStory(story);
 
         res.json(toSend);
     });
@@ -175,7 +175,7 @@ function fetch(req, res, next) {
             story.remove();
         }
 
-        let toSend = sanitizeOutboundStory(story);
+        let toSend = processOutboundStory(story);
 
         res.json(toSend);
     });
@@ -268,8 +268,18 @@ function createPreview(req, res, next) {
 
 }
 
-function sanitizeOutboundStory(story) {
-    let toSend = helpers.sanitizeOutboundObject(story);
+function processOutboundStory(story) {
+    let toSend = story.toJSON();
+    //Insert page content dynamically, by looking it up in the Story.
+    toSend.pages.forEach(page => {
+        page.content = story.content[page.contentRef];
+    });
+
+    return sanitizeOutboundJSON(toSend);
+}
+
+function sanitizeOutboundJSON(toSend) {
+    toSend = helpers.sanitizeOutboundJson(toSend);
     toSend.locations = toSend.locations.map(location => helpers.sanitizeOutboundJson(location));
     toSend.functions = toSend.functions.map(func => helpers.sanitizeOutboundJson(func));
     toSend.pages = toSend.pages.map(page => helpers.sanitizeOutboundJson(page));
