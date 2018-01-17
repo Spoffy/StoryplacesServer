@@ -121,7 +121,7 @@ var Location = new Schema({
 // Reader ---------------------------------------------------------------------
 
 var Reader = new Schema({
-    user: User,
+    userId: String,
     role: Role
 });
 
